@@ -73,7 +73,7 @@ insertData = function(){
     });
     performRequest("api-v2.soundcloud.com", "/explore/Popular+Music", "GET", {
         client_id: "73de154679452e296b7781a98ca928c0",
-        limit: 25
+        limit: 10
     }, {}, function(data){
         var musicEntry = [];
         for (var i = 0; i < data.tracks.length; i++){
@@ -84,6 +84,21 @@ insertData = function(){
         mongoDB.collection('content').insertMany(musicEntry, function(err, status){
             console.log("MUSIC INSERTED");
         });
+    });
+    performRequest("api.hypem.com", "/v2/popular", "GET", {
+        mode: 'now',
+        page: 1,
+        count: 20,
+        key: 'swagger'
+    }, {}, function(data){
+        var titles = [];
+        for (var i = 0; i < data.length; i++){
+            var song = {};
+            song.title = data[i].title;
+            song.artist = data[i].artist;
+            titles.push(song);
+        }
+        findSoundcloudSongs(titles);
     });
     performRequest("www.google.com", "/trends/hottrends/atom/feed", "GET", {
         pn: "p1"
@@ -100,6 +115,29 @@ insertData = function(){
             console.log("TRENDING SEARCHES INSERTED");
         });
     });
+}
+
+findSoundcloudSongs = function(songs){
+    var hypemEntry = [];
+    counter = 0;
+    for (var i = 0; i < songs.length; i++){
+        performRequest("api.soundcloud.com", "/tracks", "GET", {
+            client_id: "73de154679452e296b7781a98ca928c0",
+            q: songs[i].title + " " + songs[i].artist
+        }, {}, function(data){
+            counter++;
+            if (typeof data !== 'undefined'){
+                var url = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/" + data[0].id + "&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true";
+                var obj = {contentId: data[0].id, type:'music', name:data[0].title, url:url, views: data[0].playback_count, comments_count:0};
+                hypemEntry.push(obj);
+                if (counter == songs.length - 1){
+                    mongoDB.collection('content').insertMany(hypemEntry, function(err, status){
+                        console.log("HYPEM MUSIC INSERTED");
+                    });
+                }
+            }
+        });
+    }
 }
 
 exports.create = function(collection, data, callback) {
