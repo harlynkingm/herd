@@ -1,0 +1,39 @@
+<header>
+    <div class="header-inner">
+        <div class="logo">
+            <a href="/"><img src="images/logo.png" height=100%;></a>
+        </div>
+        <div class="header-icons" style="margin-left:30px; border-left: 1px solid #BFBFBF;">
+            <div class="pic icon">
+                <i class="flaticon-camera3" <% if (typeof pic !== "undefined" && pic == 'false'){ %> style="color: rgb(161, 161, 161)"<% } %>></i>
+            </div>
+        </div>
+        <div class="header-icons">
+            <div class="film icon">
+                <i class="flaticon-filmstrip" <% if (typeof film !== "undefined" && film == 'false'){ %> style="color: rgb(161, 161, 161)"<% } %>></i>
+            </div>
+        </div>
+        <div class="header-icons">
+            <div class="music icon">
+                <i class="flaticon-quaver12" <% if (typeof music !== "undefined" && music == 'false'){ %> style="color: rgb(161, 161, 161)"<% } %>></i>
+            </div>
+        </div>
+        <div class="header-icons">
+            <div class="news icon">
+                <i class="flaticon-news30" <% if (typeof news !== "undefined" && news == 'false'){ %> style="color: rgb(161, 161, 161)"<% } %>></i>
+            </div>
+        </div>
+        <% if (Object.keys(user).length > 0){ %>
+        <div id="user-header">
+            <p style="margin:0;"><%- user.username %></p>
+        </div>
+        <div id="logout">
+            <p style="margin:0;">LOGOUT</p>
+        </div>
+        <% } else { %>
+        <div id="login">
+            <p style="margin:0;">LOGIN</p>
+        </div>
+        <% } %>
+    </div>
+</header>

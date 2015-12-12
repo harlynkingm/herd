@@ -1,0 +1,440 @@
+html{
+    background-color: #666;
+}
+
+.body{
+    background-color: #F5F5F5;
+    -webkit-box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.38);
+    -moz-box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.38);
+    box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.38);
+    min-height: 100vh;
+    font-family: "AvenirNext", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.row{
+    margin-bottom: 30px;
+}
+
+.header-container{
+    border-bottom: 1px solid #BFBFBF;
+    margin-bottom: 25px;
+}
+
+
+.header-inner{
+    display: flex;
+}
+
+.content-container{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 3%;
+    padding-top: 0;
+}
+
+.logo{
+    margin-top: 10px;
+    margin-left: 35px;
+    align:left;
+    height: 40px;
+}
+
+.header-icons{
+    align: left;
+    height: 54px;
+    padding-top: 6px;
+    border-right: 1px solid #BFBFBF;
+}
+
+.header-icons:hover{
+    cursor: pointer;
+    background-color: #EEE;
+}
+
+.icon{
+    display: inline;
+    align: left;
+    font-size: 33px;
+    padding-top: 5px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#login, #user-header, #logout{
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-top: 4px;
+    font-size: 15px;
+    font-weight: 900;
+    color: #A1A1A1;
+    border-left: 1px solid #BFBFBF;
+}
+
+#login:hover, #user-header:hover, #logout:hover{
+    cursor: pointer;
+    background-color: #EEE;
+}
+
+#logout{
+    margin-left: 0;
+}
+
+.pic{
+    color: #70e453;
+}
+
+.pic-bg{
+    background-color: #70e453;
+}
+
+.film{
+    color: #9D68FE;
+}
+
+.film-bg{
+    background-color: #9D68FE;
+}
+
+.music{
+    color: #FE4B4B;
+}
+
+.music-bg{
+    background-color: #FE4B4B;
+}
+
+.news{
+    color: #62D7FF;
+}
+
+.news-bg{
+    background-color: #62D7FF;
+}
+
+.card{
+    position: initial !important;
+    margin-bottom: 30px;
+    overflow: hidden;
+    width: 31%;
+}
+
+.card-head{
+    background-color: #505050;
+    height: auto;
+    -webkit-transition: all 300ms ease-in-out;
+    float: left;
+    width: 100%;
+}
+
+.title-wrapper{
+    width: 90%;
+    margin: 0 auto;
+    color: #F5F5F5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-head:hover .title-wrapper #card-title {
+    padding-top: 15px;
+    overflow: auto;
+    text-overflow: initial;
+    white-space: normal;
+}
+
+.card-head:hover{
+    background-color: #333;
+    cursor: pointer;
+}
+
+.card-content{
+    height: 200px;
+    margin-top: 50px;
+    background-color: #fff;
+}
+
+#image-container{
+    height: inherit;
+    width: inherit;
+    cursor: pointer;
+    background-position: center center;
+    background-size: cover;
+}
+
+#card-title{
+    padding-top: 15px;
+    padding-bottom: 12px;
+    margin-bottom: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-transition: all 300ms ease-in-out;
+}
+
+.card-footer{
+    height: 40px;
+/*    display: flex;*/
+    transition: transform .2s;
+    position: relative;
+    z-index: 10;
+}
+
+.card-footer-stats{
+    overflow: hidden;
+    height: 100%;
+}
+
+.card-footer-stats:hover{
+    cursor: pointer;
+    opacity: .9;
+}
+
+.card-comments{
+    height: 200px;
+    background-color: #fff;
+/*    position: absolute;*/
+/*    bottom:0;*/
+    width: 100%;
+    z-index: 5;
+    transition: height .2s;
+    overflow-y: auto;
+}
+
+.comment, .add-comment{
+    position: relative;
+    min-height: 40px;
+    border-bottom: 1px solid #BFBFBF;
+    clear: both;
+    overflow:visible;
+}
+
+.add-comment{
+    border-top: 4px solid #BFBFBF;
+}
+
+.comment:hover{
+    background-color: #eee;
+}
+
+.comment-text{
+    font-size: 12px;
+    line-height: 17px;
+    margin: 0;
+    margin-bottom: 15px;
+    padding: 10px;
+    text-overflow: ellipsis;
+    overflow-y: visible;
+}
+
+.comment-info{
+    font-size: 10px;
+    position: absolute;
+    left: 10px;
+    margin: 0;
+    bottom: 5px;
+    font-weight: 900;
+    color: #62D7FF;
+    cursor: pointer;
+}
+
+#add-comment{
+    display: flex;
+}
+
+#comment-input{
+    font-size: 12px;
+    margin: 10px;
+    resize: none;
+    width: 60%;
+    height: 60px;
+    border-radius: 0;
+}
+
+#post-comment{
+    margin-top: 10px;
+    width: 30%;
+    height: 65px;
+    padding: 0;
+    border-radius: 0;
+    color: #62D7FF;
+}
+
+#post-comment:hover{
+    background-color: #EEE;
+}
+
+.movedUp{
+    transform: translateY(-200px);
+}
+
+.slideUp{
+    height: 200px;
+}
+
+.left-side{
+    float: left;
+    font-size: 18px;
+    margin-left: 12px;
+    margin-top: 5px;
+    color: #F5F5F5;
+}
+
+.right-side{
+    float: right;
+    font-size: 18px;
+    margin-right: 12px;
+    margin-top: 5px;
+    color: #F5F5F5;
+}
+
+#card-views{
+    display: inline;
+    margin-left: 5px;
+}
+
+#card-comments{
+    display: inline;
+    margin-right: 5px;
+}
+
+.overlay, .content-viewer, .user-options{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .6);
+    z-index: 10;
+    display: none;
+}
+
+.noscroll{
+    overflow: hidden;
+}
+
+.center-box{
+    position: inherit;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: auto;
+    font-family: "AvenirNext";
+    -webkit-box-shadow: 0px 0px 30px 0px rgba(0,0,0,.4);
+-moz-box-shadow: 0px 0px 30px 0px rgba(0,0,0,.4);
+box-shadow: 0px 0px 30px 0px rgba(0,0,0,.4);
+/*    background-color: #eee;*/
+}
+
+.content-box{
+    position: inherit;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+    height: auto;
+}
+
+#expanded-image{
+    position: inherit;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center-box-header{
+    color:#eee;
+    margin-bottom:0;
+    background-color:#505050;
+    padding:10px;
+    padding-top:18px
+}
+
+.login-input{
+    height: 30px;
+    width: 70%;
+    padding-left: 10px;
+    padding-top: 5px;
+    border: 1px solid #BFBFBF;
+}
+
+.center{
+    text-align: center;
+}
+
+#login-form, #register-form{
+    padding-bottom:30px;
+    background-color: #eee;
+    margin: 0;
+}
+
+#register-form{
+    display: none;
+}
+
+.user-submit{
+    font-weight: 500;
+    border-radius: 0px;
+    background-color: #505050;
+    color: #eee;
+    margin-top: 10px;
+    width: 73%;
+}
+
+.user-submit:hover{
+    opacity: .9;
+    color: #eee;
+}
+
+#new-member, #returning-member{
+    width:73%;
+    margin:auto;
+    margin-bottom:5px;
+    font-size:12px;
+    text-align:right;
+    cursor:pointer;
+    font-family:AvenirNext;
+}
+
+@font-face{
+    font-family: AvenirNext;
+    src: url("../font/AvenirNextLTPro-Demi.otf") format("opentype");
+}
+
+@font-face{
+    font-family: AvenirNext;
+    font-weight: bold;
+    src: url("../font/AvenirNextLTPro-Bold.otf") format("opentype");
+}
+
+@media(max-width: 1000px){
+    .card{
+        width: 48.5%;
+    }
+}
+
+@media (max-width: 770px){
+    .header-icons{
+        display: none;
+    }
+    .logo{
+        padding-bottom: 10px;
+        margin-left: 10px;
+    }
+    #login, #user-header, #logout{
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 80%;
+    }
+    .card-wrapper{
+        width: 95%;
+    }
+    .card{
+        width: 98%;
+    }
+}

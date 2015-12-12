@@ -1,0 +1,22 @@
+<div class="card-comments">
+    <% for (var i = 0; i < comments.length; i++){ %>
+    <div class="comment">
+        <p class="comment-text">
+            <%- comments[i].comment %>
+        </p>
+        <p class="comment-info">
+            <%- comments[i].username %>
+        </p>
+    </div>
+    <% } %>
+    <div class="add-comment">
+        <form id="add-comment" style="margin:0">
+            <% if (Object.keys(user).length > 0){ %>
+            <textarea id="comment-input" placeholder="Add a comment"></textarea>
+            <% } else { %>
+            <textarea id="comment-input" placeholder="Add a guest comment"></textarea>
+            <% } %>
+            <button type="submit" id="post-comment">POST</button>
+        </form>
+    </div>
+</div>
