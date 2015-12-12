@@ -4,6 +4,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var session = require('client-sessions');
 var app = express();
+var http = require('http');
 app.use(morgan('short'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
