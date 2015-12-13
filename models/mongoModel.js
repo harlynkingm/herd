@@ -127,11 +127,11 @@ findSoundcloudSongs = function(songs){
                 var url = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/" + data[0].id + "&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true";
                 var obj = {contentId: data[0].id, type:'music', name:data[0].title, url:url, views: data[0].playback_count, comments_count:0};
                 mongoDB.collection('content').insertOne(obj, function(err, status){
-                    console.log("INSERTED HYPEM");
                 });
             }
         });
     }
+    console.log("INSERTED HYPEM");
 }
 
 exports.create = function(collection, data, callback) {

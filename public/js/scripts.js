@@ -8,6 +8,15 @@ $(document).ready(function() {
     // I did this so every user could have a randomized order of the items
     // If users got items from the database on each new load, they would not be random
     var allData = [];
+
+    // This variable keeps track of whether items are currently being loaded
+    var canLoad = true;
+    
+    // This variable keeps the card partial to save load times
+    var cardPartial;
+    
+    // This variable keeps the card comments partial
+    var cardCommentsPartial;
     
     // When a page is first loaded, all of the data is grabbed from the database
     // The data is returned in a random order and stored locally
@@ -16,7 +25,13 @@ $(document).ready(function() {
         type: 'GET',
         success: function(data){
             allData = data;
-            loadMore();
+            getTemplate('/views/cardPartial.ejs', function(err, template){
+                cardPartial = _.template(template);
+                loadMore();
+            });
+            getTemplate('/views/cardCommentsPartial.ejs', function(err, template){
+                cardCommentsPartial = _.template(template);
+            });
         }
     });
     
@@ -26,25 +41,25 @@ $(document).ready(function() {
     // The load more function loads 20 more items into the page from local storage
     // It uses templating to load in individual cards
     function loadMore(){
+        canLoad = false;
         startLoaded = loaded;
         if (loaded < allData.length - 10) loaded += 10;
         else{
             loaded += (allData.length - loaded);
+            $(".loading").hide();
             console.log("LOADED ALL");
         }
-        getTemplate('/views/cardPartial.ejs', function(err, template){
-            for (var i = startLoaded; i < loaded; i++){
-                var card = _.template(template);
-                var templ = card({card: allData[i]});
-                $(".content-container").append(templ);
-            }
-        });
+        for (var i = startLoaded; i < loaded; i++){
+            var templ = cardPartial({card: allData[i]});
+            $(".content-container").append(templ);
+        }
+        canLoad = true;
     }
     
     // If a user is more than 60% down the length of the page, load more content
     $(window).scroll(function(){
         var percent = ($(window).scrollTop() / ($(document).height() - $(window).height()));
-        if (percent > .8 && loaded < allData.length) loadMore();
+        if (canLoad && percent > .8 && loaded < allData.length) loadMore();
     });
     
     // This function retrieves templates from the server for local interpretation.
@@ -143,20 +158,17 @@ $(document).ready(function() {
             type: 'GET',
             data: {contentId: contentId},
             success: function(data){
-                getTemplate('/views/cardCommentsPartial.ejs', function(err, template){
-                    // If comments have already been added, remove them for reloading
-                    if (childCount != 1){
-                        item.next().remove();
-                    }
-                    // Put together the template for comments
-                    var comments = _.template(template);
-                    var templ = comments({comments: data, user: user});
-                    item.parent().append(templ);
-                    // Scroll the div to the bottom so the user is focused on their input box
-                    item.next()[0].scrollTop = item.next()[0].scrollHeight;
-                    item.next().toggleClass("slideUp");
-                    item.parent().toggleClass("movedUp");
-                });
+                // If comments have already been added, remove them for reloading
+                if (childCount != 1){
+                    item.next().remove();
+                }
+                // Put together the template for comments
+                var templ = cardCommentsPartial({comments: data, user: user});
+                item.parent().append(templ);
+                // Scroll the div to the bottom so the user is focused on their input box
+                item.next()[0].scrollTop = item.next()[0].scrollHeight;
+                item.next().toggleClass("slideUp");
+                item.parent().toggleClass("movedUp");
             }
         });
     }
@@ -168,19 +180,16 @@ $(document).ready(function() {
             type: 'GET',
             data: {contentId: card.data("id")},
             success: function(data){
-                getTemplate('/views/cardCommentsPartial.ejs', function(err, template){
-                    var comments = _.template(template);
-                    var templ = comments({comments: data, user: user});
-                    templ = $(templ).children().not(".add-comment");
-                    if (templ.length){
-                        card.children().last().children().last().children().not(".add-comment").remove();
-                        card.children().last().children().last().prepend(templ);
-                    }
-                    card.children().last().children().last()[0].scrollTop = card.children().last().children().last()[0].scrollHeight;
-                    var count = card.children().last().children().first().children().last().children().first();
-                    count.html(data.length);
-                    updateCommentCount(card.data("id"), data.length);
-                });
+                var templ = cardCommentsPartial({comments: data, user: user});
+                templ = $(templ).children().not(".add-comment");
+                if (templ.length){
+                    card.children().last().children().last().children().not(".add-comment").remove();
+                    card.children().last().children().last().prepend(templ);
+                }
+                card.children().last().children().last()[0].scrollTop = card.children().last().children().last()[0].scrollHeight;
+                var count = card.children().last().children().first().children().last().children().first();
+                count.html(data.length);
+                updateCommentCount(card.data("id"), data.length);
             }
         });
     }
