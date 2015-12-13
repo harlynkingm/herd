@@ -327,6 +327,12 @@ $(document).ready(function() {
         e.preventDefault();
     });
     
+    $("#image-container").on("tap", function(){
+        var url = $(this).css("background-image");
+        url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        window.open(url, '_blank');
+    });
+    
     // Checks if the two password fields match
     $("#new-repeat-password-input").on("input", function(){
         var password = $("#new-password-input").val();
