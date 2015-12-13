@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // Local storage keeps track of three things
     // The filter is what types of items are currently being viewed by the user
-    filter = [];
+    filter = ["#pic-card", "#film-card", "#music-card", "#news-card"];
     // Loaded is the number of items the user currently has displayed on the page
     var loaded = 0;
     // allData is a list of every item imported from the database
@@ -52,8 +52,12 @@ $(document).ready(function() {
         }
         for (var i = startLoaded; i < loaded; i++){
             var templ = cardPartial({card: allData[i]});
-            $(".content-container").append(templ);
+            var card_type = "#" + $(templ).attr('id');
+            if (filter.indexOf(card_type) != -1){
+                $(".content-container").append(templ);
+            }
         }
+        $(".content-container").css("height", "");
         canLoad = true;
     }
     
@@ -77,12 +81,6 @@ $(document).ready(function() {
             }
         });
     }
-    
-    // When the page loads, all filter icons turn grey
-    // This was done so that when the user clicks them, they can change to a color
-    $(".header-icons").each(function(index, elem){
-        $(elem).children().children().css("color", "rgb(161, 161, 161)");
-    });
     
     // The login button in the header loads the login overlay
     $("#login").on(clickHandler, function(){
@@ -226,7 +224,7 @@ $(document).ready(function() {
         // Handles cases for currently grey buttons
         if ($(this).children().children().css("color") == "rgb(161, 161, 161)"){
             if ($(this).children().hasClass("pic")){
-                $(this).children().children().css("color", "#79FF58");
+                $(this).children().children().css("color", "#70e453");
                 filter.push("#pic-card");
             }
             else if ($(this).children().hasClass("film")){
@@ -264,6 +262,7 @@ $(document).ready(function() {
             percentPosition: true,
             transitionDuration: '0.0001s'
         });
+        $(".content-container").css("height", "");
     });
     
     // Defines how content can be viewed larger based on content type
