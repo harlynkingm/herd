@@ -327,7 +327,7 @@ $(document).ready(function() {
         e.preventDefault();
     });
     
-    $("#image-container").on("tap", function(){
+    $("#image-container").on("touchend", function(){
         var url = $(this).css("background-image");
         url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         window.open(url, '_blank');
