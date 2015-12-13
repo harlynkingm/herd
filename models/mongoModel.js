@@ -35,11 +35,19 @@ resetData = function(){
 insertData = function(){
     var oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    getYoutubeVideos(30);
+    getImgurPictures(60, 0);
+    getSoundcloudSongs(10);
+    getHypemachineSongs(25);
+    getGoogleSearches();
+}
+
+getYoutubeVideos = function(quantity){
     performRequest("www.googleapis.com", "/youtube/v3/videos", "GET", {
         part: "snippet,statistics",
         key : "AIzaSyDEh4wbcH2c5RjsMByHgi_iSAsiIcdjwLY",
         chart: "mostPopular",
-        maxResults: 30
+        maxResults: quantity
     }, {}, function(data){
         var vidEntry = [];
         for (var i = 0; i < data.items.length; i++){
@@ -48,10 +56,13 @@ insertData = function(){
             vidEntry.push(obj);
         }
         mongoDB.collection('content').insertMany(vidEntry, function(err, status){
-            console.log("VIDEOS INSERTED");
+            console.log(vidEntry.length + " VIDEOS INSERTED");
         });
     });
-    performRequest("api.imgur.com", "/3/gallery/hot/viral/0.json", "GET", {}, {
+}
+
+getImgurPictures = function(quantity, page){
+    performRequest("api.imgur.com", "/3/gallery/hot/viral/" + page + ".json", "GET", {}, {
         Authorization: "Client-ID 708faef2aabcf69"
     }, function(data){
         var imgEntry = [];
@@ -64,16 +75,25 @@ insertData = function(){
                     var url = data.data[i].link;
                 }
                 var obj = {contentId: i + 100, type:'pic', name:data.data[i].title, url:url, views: data.data[i].views, comments_count:0};
-                imgEntry.push(obj);
+                if (quantity > 0){
+                    imgEntry.push(obj);
+                    quantity--;
+                }
             }
         }
         mongoDB.collection('content').insertMany(imgEntry, function(err, status){
-            console.log("PICS INSERTED");
+            if (quantity > 0){
+                getImgurPictures(quantity, page + 1);
+            }
+            console.log(imgEntry.length + " PICS INSERTED");
         });
     });
+}
+
+getSoundcloudSongs = function(quantity){
     performRequest("api-v2.soundcloud.com", "/explore/Popular+Music", "GET", {
         client_id: "73de154679452e296b7781a98ca928c0",
-        limit: 10
+        limit: quantity
     }, {}, function(data){
         var musicEntry = [];
         for (var i = 0; i < data.tracks.length; i++){
@@ -82,13 +102,16 @@ insertData = function(){
             musicEntry.push(obj);
         }
         mongoDB.collection('content').insertMany(musicEntry, function(err, status){
-            console.log("MUSIC INSERTED");
+            console.log(musicEntry.length + " SONGS INSERTED");
         });
     });
+}
+
+getHypemachineSongs = function(quantity){
     performRequest("api.hypem.com", "/v2/popular", "GET", {
         mode: 'now',
         page: 1,
-        count: 20,
+        count: quantity,
         key: 'swagger'
     }, {}, function(data){
         var titles = [];
@@ -99,21 +122,7 @@ insertData = function(){
             titles.push(song);
         }
         findSoundcloudSongs(titles);
-    });
-    performRequest("www.google.com", "/trends/hottrends/atom/feed", "GET", {
-        pn: "p1"
-    }, {}, function(data){
-        var newsEntry = [];
-        var list = data.rss.channel[0].item;
-        for (var i = 0; i < list.length; i++){
-            var viewCount = parseInt(list[i]['ht:approx_traffic'][0].replace(/\D/g,''));
-            var url = '<a href="' + list[i]['ht:news_item'][0]['ht:news_item_url'] + '"target="_blank">' + list[i]['ht:news_item'][0]['ht:news_item_title'] + '</a>';
-            var obj = {contentId: i + 10000, type:'news', name:'Trending Search: '+list[i].title[0], url:url, views: viewCount, comments_count:0};
-            newsEntry.push(obj);
-        }
-        mongoDB.collection('content').insertMany(newsEntry, function(err, status){
-            console.log("TRENDING SEARCHES INSERTED");
-        });
+        console.log(titles.length + " HYPEM SONGS INSERTED");
     });
 }
 
@@ -131,7 +140,24 @@ findSoundcloudSongs = function(songs){
             }
         });
     }
-    console.log("INSERTED HYPEM");
+}
+
+getGoogleSearches = function(){
+    performRequest("www.google.com", "/trends/hottrends/atom/feed", "GET", {
+        pn: "p1"
+    }, {}, function(data){
+        var newsEntry = [];
+        var list = data.rss.channel[0].item;
+        for (var i = 0; i < list.length; i++){
+            var viewCount = parseInt(list[i]['ht:approx_traffic'][0].replace(/\D/g,''));
+            var url = '<a href="' + list[i]['ht:news_item'][0]['ht:news_item_url'] + '"target="_blank">' + list[i]['ht:news_item'][0]['ht:news_item_title'] + '</a>';
+            var obj = {contentId: i + 10000, type:'news', name:'Trending Search: '+list[i].title[0], url:url, views: viewCount, comments_count:0};
+            newsEntry.push(obj);
+        }
+        mongoDB.collection('content').insertMany(newsEntry, function(err, status){
+            console.log(newsEntry.length + " TRENDING SEARCHES INSERTED");
+        });
+    });
 }
 
 exports.create = function(collection, data, callback) {

@@ -25,6 +25,7 @@ $(document).ready(function() {
         type: 'GET',
         success: function(data){
             allData = data;
+            console.log(allData.length);
             getTemplate('/views/cardPartial.ejs', function(err, template){
                 cardPartial = _.template(template);
                 loadMore();
