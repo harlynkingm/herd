@@ -121,18 +121,16 @@ findSoundcloudSongs = function(songs){
     var hypemEntry = [];
     counter = 0;
     for (var i = 0; i < songs.length; i++){
+        counter++;
         performRequest("api.soundcloud.com", "/tracks", "GET", {
             client_id: "73de154679452e296b7781a98ca928c0",
             q: songs[i].title + " " + songs[i].artist
         }, {}, function(data){
-            counter++;
             if (data[0]){
                 var url = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/" + data[0].id + "&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true";
                 var obj = {contentId: data[0].id, type:'music', name:data[0].title, url:url, views: data[0].playback_count, comments_count:0};
                 hypemEntry.push(obj);
-                console.log(counter);
                 if (counter == songs.length - 1){
-                    console.log("ASDFLKASHDJFLKAJDFLKASJDFKLAJSKFDJLASKJDFLAKJ");
                     mongoDB.collection('content').insertMany(hypemEntry, function(err, status){
                         console.log("HYPEM MUSIC INSERTED");
                     });
