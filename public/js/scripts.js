@@ -327,12 +327,6 @@ $(document).ready(function() {
         e.preventDefault();
     });
     
-    $(".content-container").on("touchend", "#image-container", function(){
-        var url = $(this).css("background-image");
-        url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        window.open(url, '_blank');
-    });
-    
     $(".content-container").on("click", "#image-container", function(){
         var url = $(this).css("background-image");
         url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
