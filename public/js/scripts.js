@@ -276,13 +276,13 @@ $(document).ready(function() {
                 url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
                 var elem = $("<img/>",{
                     src: url,
-                    style: "max-width:640px; min-width: 300px;max-height:480px;position:relative;left:50%;transform:translate(-50%)"
+                    style: "max-width:640px;max-height:480px;position:relative;left:50%;transform:translate(-50%)"
                 });
                 } else {
                 var url = $(this).next().children().attr("src");
                 var elem = $("<video/>",{
                     src: url,
-                    style:"max-width:640px; min-width: 300px;max-height:480px;position:relative;left:50%;transform:translate(-50%)",
+                    style:"max-width:640px; max-height:480px;position:relative;left:50%;transform:translate(-50%)",
                     autoplay: true,
                     loop: true
                 });
@@ -328,6 +328,12 @@ $(document).ready(function() {
     });
     
     $(".content-container").on("touchend", "#image-container", function(){
+        var url = $(this).css("background-image");
+        url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        window.open(url, '_blank');
+    });
+    
+    $(".content-container").on("click", "#image-container", function(){
         var url = $(this).css("background-image");
         url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         window.open(url, '_blank');
@@ -479,22 +485,24 @@ $(document).ready(function() {
         var id = $(this).parent().parent().parent().parent().data("id");
         var item = $(this);
         var comment = item.children().first().val();
-        item.children().first().val("");
-        $.ajax({
-            url: '/comments/new',
-            type: 'PUT',
-            data: {contentId: id, comment: comment},
-            success: function(){
-                var card = item.parent().parent().parent().parent();
-                $.ajax({
-                    url: '/session',
-                    type: 'GET',
-                    success: function(user){
-                        reloadComments(card, user);
-                    }
-                });
-            }
-        });
+        if (comment.length){
+            item.children().first().val("");
+            $.ajax({
+                url: '/comments/new',
+                type: 'PUT',
+                data: {contentId: id, comment: comment},
+                success: function(){
+                    var card = item.parent().parent().parent().parent();
+                    $.ajax({
+                        url: '/session',
+                        type: 'GET',
+                        success: function(user){
+                            reloadComments(card, user);
+                        }
+                    });
+                }
+            });
+        }
     });
 
 });
