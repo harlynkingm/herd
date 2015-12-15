@@ -49,6 +49,9 @@
             <div class="right-side">
                 <p id="card-comments"><%- card.comments_count %></p>
                 <i class="flaticon-social11"></i>
+                <% if (Object.keys(user).length){ %>
+                <i class="flaticon-heart13 card-favorite"></i>
+                <% } %>
             </div>
         </div>    
 <!--        include('./views/cardCommentsPartial.ejs')-->

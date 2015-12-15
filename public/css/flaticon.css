@@ -22,12 +22,15 @@ font-style: normal;
 .flaticon-filmstrip:before {
 	content: "\e002";
 }
-.flaticon-news30:before {
+.flaticon-heart13:before {
 	content: "\e003";
 }
-.flaticon-quaver12:before {
+.flaticon-news30:before {
 	content: "\e004";
 }
-.flaticon-social11:before {
+.flaticon-quaver12:before {
 	content: "\e005";
+}
+.flaticon-social11:before {
+	content: "\e006";
 }

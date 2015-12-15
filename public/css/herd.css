@@ -194,6 +194,18 @@ html{
     opacity: .9;
 }
 
+.card-favorite{
+    padding-left: 11px;
+    font-size: 110%;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: white;
+    color: rgba(256, 256, 256, 0);
+}
+
+.card-favorite:hover{
+    color: rgba(256, 256, 256, .5);
+}
+
 .card-comments{
     height: 200px;
     background-color: #fff;

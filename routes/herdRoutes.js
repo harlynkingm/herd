@@ -13,13 +13,14 @@ exports.init = function(app){
     app.get('/users/u', checkUser);
     app.get('/users/p', checkPassword);
     app.post('/users/update', updateUser);
+    app.post('/users/addFavorite', addFavorite);
     app.delete('/users/delete', deleteUser);
     app.put('/comments/new', newComment);
     app.get('/comments', getComment);
 }
 
 //TABLES
-// Users: {username, email, password(encrypted)}
+// Users: {username, email, password(encrypted), favorites}
 // Content: {contentId, type ('film' 'pic' 'music' 'news'), name, url, views, comments_count}
 // Comments: {contentId, comment, username}
 
@@ -119,14 +120,16 @@ checkUser = function(req, res){
 // Checks if the password is correct for the user
 checkPassword = function(req, res){
     mongoModel.retrieve('users', {username:req.query.username}, function(data){
-        bcrypt.compare(req.query.password, data[0].password, function(err, rep){
-            if (rep){
-                res.send(true);
-            }
-            else{
-                res.send(false);
-            }
-        });
+        if (data[0]){
+            bcrypt.compare(req.query.password, data[0].password, function(err, rep){
+                if (rep){
+                    res.send(true);
+                }
+                else{
+                    res.send(false);
+                }
+            });
+        }
     });
 }
 
@@ -137,6 +140,27 @@ updateUser = function(req, res){
         var update = {"$set":{"password":hash}};
         mongoModel.update('users', filter, update, function(status){
             index(req, res);
+        });
+    });
+}
+
+addFavorite = function(req, res){
+    var filter = {"username": req.session.user.username};
+    mongoModel.retrieve('users', {username:req.session.user.username}, function(data){
+        if (typeof data.favorites === 'undefined'){
+            var favorites = [];
+        }
+        else{
+            var favorites = data.favorites;
+        }
+        mongoModel.retrieve('content', {"contentId": parseInt(req.body.contentId)}, function(data){
+            var i = favorites.indexOf(data[0]);
+            if (i == -1) favorites.push(data[0]);
+            else favorites.splice(i, 1);
+            var update = {"$set":{"favorites":favorites}};
+            mongoModel.update('users', filter, update, function(status){
+                console.log(favorites);
+            });
         });
     });
 }

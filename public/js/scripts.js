@@ -18,6 +18,9 @@ $(document).ready(function() {
     // This variable keeps the card comments partial
     var cardCommentsPartial;
     
+    // This keeps track of the username globally
+    var globalUser = {};
+    
     // When a page is first loaded, all of the data is grabbed from the database
     // The data is returned in a random order and stored locally
     $.ajax({
@@ -26,13 +29,19 @@ $(document).ready(function() {
         success: function(data){
             allData = data;
             console.log(allData.length);
-            getTemplate('/views/cardPartial.ejs', function(err, template){
-                cardPartial = _.template(template);
-                loadMore();
-            });
-            getTemplate('/views/cardCommentsPartial.ejs', function(err, template){
-                cardCommentsPartial = _.template(template);
-            });
+            $.ajax({
+                url: '/session',
+                type: 'GET',
+                success: function(user){
+                    globalUser = user;
+                    getTemplate('/views/cardPartial.ejs', function(err, template){
+                        cardPartial = _.template(template);
+                        loadMore();
+                    });
+                    getTemplate('/views/cardCommentsPartial.ejs', function(err, template){
+                        cardCommentsPartial = _.template(template);
+                    });
+            }});
         }
     });
     
@@ -51,7 +60,7 @@ $(document).ready(function() {
             console.log("LOADED ALL");
         }
         for (var i = startLoaded; i < loaded; i++){
-            var templ = cardPartial({card: allData[i]});
+            var templ = cardPartial({card: allData[i], user: globalUser});
             var card_type = "#" + $(templ).attr('id');
             if (filter.indexOf(card_type) != -1){
                 $(".content-container").append(templ);
@@ -137,11 +146,24 @@ $(document).ready(function() {
     // Comments are loaded into the page for that item
     $(".content-container").on(clickHandler, ".card-footer-stats", function(){
         var orig = $(this);
+        loadComments(orig, globalUser, orig.parent().parent().data("id"));
+    });
+    
+    $(".content-container").on(clickHandler, ".card-favorite", function(event){
+        event.stopPropagation(); 
+        var contentId = $(this).parent().parent().parent().parent().data("id");
+        var obj = $(this);
+        if (obj.css("color") == "rgb(255, 255, 255)"){
+            obj.css("color", "rgba(255, 255, 255, 0)");
+        }
+        else{
+            obj.css("color", "rgba(255, 255, 255, 1)");
+        }
         $.ajax({
-            url: '/session',
-            type: 'GET',
-            success: function(user){
-                loadComments(orig, user, orig.parent().parent().data("id"));
+            url: '/users/addFavorite',
+            type: 'POST',
+            data: {contentId: contentId},
+            success: function(data){
             }
         });
     });
@@ -166,6 +188,8 @@ $(document).ready(function() {
                 item.parent().append(templ);
                 // Scroll the div to the bottom so the user is focused on their input box
                 item.next()[0].scrollTop = item.next()[0].scrollHeight;
+                $(".slideUp").not(item.next()).removeClass("slideUp");
+                $(".movedUp").not(item.parent()).removeClass("movedUp");
                 item.next().toggleClass("slideUp");
                 item.parent().toggleClass("movedUp");
             }
@@ -353,6 +377,7 @@ $(document).ready(function() {
     // Checks if the username is a real user in the database
     $("#username-input").on("focusout", function(){
         var username = $("#username-input").val();
+        if (username == "") return;
         $.ajax({
             url: '/users/u',
             type: 'GET',
@@ -373,6 +398,7 @@ $(document).ready(function() {
     $("#password-input").on("focusout", function(){
         var username = $("#username-input").val();
         var password = $("#password-input").val();
+        if (username == "" || password == "") return;
         $.ajax({
             url: '/users/p',
             type: 'GET',
@@ -491,13 +517,7 @@ $(document).ready(function() {
                 data: {contentId: id, comment: comment},
                 success: function(){
                     var card = item.parent().parent().parent().parent();
-                    $.ajax({
-                        url: '/session',
-                        type: 'GET',
-                        success: function(user){
-                            reloadComments(card, user);
-                        }
-                    });
+                    reloadComments(card, globalUser);
                 }
             });
         }
