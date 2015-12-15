@@ -1,6 +1,7 @@
 var mongoModel = require("../models/mongoModel.js")
 var bcrypt = require('bcrypt-nodejs');
 
+// All of the required routes
 exports.init = function(app){
     app.get('/', index);
     app.get('/content', content);
@@ -22,6 +23,7 @@ exports.init = function(app){
 // Content: {contentId, type ('film' 'pic' 'music' 'news'), name, url, views, comments_count}
 // Comments: {contentId, comment, username}
 
+// Takes a user to the main page
 index = function(req, res){
     if (typeof req.session.user === 'undefined'){
         req.session.user = {};
@@ -29,6 +31,7 @@ index = function(req, res){
     res.render('index',{user:req.session.user});
 }
 
+// Returns all of the content in the database
 content = function(req, res){
     mongoModel.retrieve('content', {}, function(data){
         data = shuffle(data);
@@ -36,6 +39,7 @@ content = function(req, res){
     });
 }
 
+// Returns the current active user
 session = function(req, res){
     if (typeof req.session.user === 'undefined'){
         req.session.user = {};
@@ -57,7 +61,7 @@ function shuffle(array) {
   return array;
 }
 
-
+// Logs into the system
 login = function(req, res){
     mongoModel.retrieve('users', {username:req.query.username}, function(data){
         if (data.length){
@@ -74,11 +78,13 @@ login = function(req, res){
     });
 }
 
+// Logs out of the system
 logout = function(req, res){
     req.session.user = {};
     index(req, res);
 }
 
+// Creates a new user
 newUser = function(req, res){
     mongoModel.retrieve('users', {username:req.body.username}, function(data){
         if (data.length){
@@ -98,6 +104,7 @@ newUser = function(req, res){
     });
 }
 
+// Checks if the user is in the system
 checkUser = function(req, res){
     mongoModel.retrieve('users', {username:req.query.username}, function(data){
         if (data.length){
@@ -109,6 +116,7 @@ checkUser = function(req, res){
     });
 }
 
+// Checks if the password is correct for the user
 checkPassword = function(req, res){
     mongoModel.retrieve('users', {username:req.query.username}, function(data){
         bcrypt.compare(req.query.password, data[0].password, function(err, rep){
@@ -122,6 +130,7 @@ checkPassword = function(req, res){
     });
 }
 
+// Updates the password for the user
 updateUser = function(req, res){
     var filter = {"username": req.session.user.username};
     bcrypt.hash(req.body.newPassword, null, null, function(err, hash){
@@ -132,6 +141,7 @@ updateUser = function(req, res){
     });
 }
 
+// Updates the comments count of a content item
 updateCount = function(req, res){
     var filter = {"contentId": parseInt(req.body.contentId)};
     var update = {"$set":{"comments_count": req.body.newCount}};
@@ -140,6 +150,7 @@ updateCount = function(req, res){
     });
 }
 
+// Deletes a user from the system
 deleteUser = function(req, res){
     var filter = {"username": req.session.user.username};
     mongoModel.delete('users', filter, function(status){
@@ -148,6 +159,7 @@ deleteUser = function(req, res){
     });
 }
 
+// Adds a new comment to the system
 newComment = function(req, res){
     var filter = {"contentId": req.body.contentId};
     if (typeof req.session.user.username === 'undefined'){
@@ -163,6 +175,7 @@ newComment = function(req, res){
     });
 }
 
+// Returns all comments for a content item
 getComment = function(req, res){
     mongoModel.retrieve('comments', {'contentId':req.query.contentId}, function(data){
         res.send(data);

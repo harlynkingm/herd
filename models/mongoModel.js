@@ -14,6 +14,7 @@ if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
 // Global variable of the connected database
 var mongoDB;
 
+// Creates server then sets to reset every 15 minutes
 mongoClient.connect('mongodb://'+connection_string, function(err, db){
     if (err) doError(err);
     console.log("Connected to MongoDB server at: "+connection_string);
@@ -22,6 +23,7 @@ mongoClient.connect('mongodb://'+connection_string, function(err, db){
     setInterval(function(){ resetData()}, 1000 * 60 * 15);
 });
 
+// Resets the data in the system by pulling from API's
 resetData = function(){
     mongoDB.collection('content').deleteMany({}, function(err, status){
         console.log("CONTENT CLEARED");
@@ -32,6 +34,7 @@ resetData = function(){
     });
 }
 
+// Inserts all of the data into the database by calling API's
 insertData = function(){
     var oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -42,6 +45,7 @@ insertData = function(){
     getGoogleSearches();
 }
 
+// Returns a YouTube query of the most popular videos
 getYoutubeVideos = function(quantity){
     performRequest("www.googleapis.com", "/youtube/v3/videos", "GET", {
         part: "snippet,statistics",
@@ -61,6 +65,7 @@ getYoutubeVideos = function(quantity){
     });
 }
 
+// Returns any number of popular Imgur pictures
 getImgurPictures = function(quantity, page){
     performRequest("api.imgur.com", "/3/gallery/hot/viral/" + page + ".json", "GET", {}, {
         Authorization: "Client-ID 708faef2aabcf69"
@@ -90,6 +95,7 @@ getImgurPictures = function(quantity, page){
     });
 }
 
+// Returns the most popular SoundCloud songs
 getSoundcloudSongs = function(quantity){
     performRequest("api-v2.soundcloud.com", "/explore/Popular+Music", "GET", {
         client_id: "73de154679452e296b7781a98ca928c0",
@@ -107,6 +113,7 @@ getSoundcloudSongs = function(quantity){
     });
 }
 
+// Gets the currently most popular songs on hype machine
 getHypemachineSongs = function(quantity){
     performRequest("api.hypem.com", "/v2/popular", "GET", {
         mode: 'now',
@@ -126,6 +133,7 @@ getHypemachineSongs = function(quantity){
     });
 }
 
+// Using a list of song titles and artists, finds the songs in SoundCloud
 findSoundcloudSongs = function(songs){
     for (var i = 0; i < songs.length; i++){
         performRequest("api.soundcloud.com", "/tracks", "GET", {
@@ -142,6 +150,7 @@ findSoundcloudSongs = function(songs){
     }
 }
 
+// Gets the currently most popular Google searches
 getGoogleSearches = function(){
     performRequest("www.google.com", "/trends/hottrends/atom/feed", "GET", {
         pn: "p1"
@@ -160,6 +169,7 @@ getGoogleSearches = function(){
     });
 }
 
+// Creates a document in the database
 exports.create = function(collection, data, callback) {
   mongoDB.collection(collection).insertOne(data, function(err, status) {
       if (err) doError(err);
@@ -168,6 +178,7 @@ exports.create = function(collection, data, callback) {
     });
 }
 
+// Retrieves a document from the database
 exports.retrieve = function(collection, query, callback) {
   mongoDB.collection(collection).find(query).toArray(function(err, docs) {
     if (err) doError(err);
@@ -175,6 +186,7 @@ exports.retrieve = function(collection, query, callback) {
   });
 }
 
+// Updates a document in the database
 exports.update = function(collection, filter, update, callback) {
   mongoDB.collection(collection).updateMany(
       filter, update, {upsert:false},function(err, status) {
@@ -184,6 +196,7 @@ exports.update = function(collection, filter, update, callback) {
     });
 }
 
+// Deletes an item from the database
 exports.delete = function(collection, query, callback){
     console.log(query);
     mongoDB.collection(collection)
@@ -193,12 +206,13 @@ exports.delete = function(collection, query, callback){
     });
 }
 
+// Throws an error in the system if something goes wrong
 var doError = function(e) {
         console.error("ERROR: " + e);
         throw new Error(e);
     }
 
-// Request code taken from:
+// Serverside request code taken from:
 // http://rapiddg.com/blog/calling-rest-api-nodejs-script
 function performRequest(host, endpoint, method, data, headers, success) {
   var dataString = JSON.stringify(data);

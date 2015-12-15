@@ -193,6 +193,7 @@ $(document).ready(function() {
         });
     }
     
+    // When a comment is added, updates the count of the comments in the database
     function updateCommentCount(id, newCount){
         $.ajax({
             url: '/content/update',
@@ -203,6 +204,7 @@ $(document).ready(function() {
         });
     }
     
+    // Automatically refreshes any open comments windows every 3 seconds
     $.ajax({
         url: '/session',
         type: 'GET',
@@ -323,10 +325,12 @@ $(document).ready(function() {
         }
     });
     
+    // Prevents images from loading on top of the page on touch
     $(".content-container").on("touchstart", ".card-head", function(e){
         e.preventDefault();
     });
     
+    // Opens up the image in a separate window on click
     $(".content-container").on("click", "#image-container", function(){
         var url = $(this).css("background-image");
         url = url.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
