@@ -14,6 +14,7 @@ exports.init = function(app){
     app.get('/users/p', checkPassword);
     app.post('/users/update', updateUser);
     app.post('/users/addFavorite', addFavorite);
+    app.get('/users/favoriteIds', favoriteIds);
     app.delete('/users/delete', deleteUser);
     app.put('/comments/new', newComment);
     app.get('/comments', getComment);
@@ -147,22 +148,52 @@ updateUser = function(req, res){
 addFavorite = function(req, res){
     var filter = {"username": req.session.user.username};
     mongoModel.retrieve('users', {username:req.session.user.username}, function(data){
-        if (typeof data.favorites === 'undefined'){
+        if (typeof data[0].favorites === 'undefined'){
             var favorites = [];
         }
         else{
-            var favorites = data.favorites;
+            var favorites = data[0].favorites;
         }
-        mongoModel.retrieve('content', {"contentId": parseInt(req.body.contentId)}, function(data){
-            var i = favorites.indexOf(data[0]);
-            if (i == -1) favorites.push(data[0]);
-            else favorites.splice(i, 1);
+        mongoModel.retrieve('content', {"name": req.body.name}, function(data){
+            var i = indexOf(favorites, data[0]);
+            if (i == -1){
+                favorites.push(data[0]);
+            }
+            else{
+                favorites.splice(i, 1);
+            }
             var update = {"$set":{"favorites":favorites}};
             mongoModel.update('users', filter, update, function(status){
                 console.log(favorites);
+                res.send(true);
             });
         });
     });
+}
+
+favoriteIds = function(req, res){
+    var filter = {"username": req.session.user.username};
+    mongoModel.retrieve('users', {username:req.session.user.username}, function(data){
+        if (data[0] && typeof data[0].favorites !== 'undefined'){
+            var favoriteIds = [];
+            for (var i = 0; i < data[0].favorites.length; i++){
+                favoriteIds.push(data[0].favorites[i].name);
+            }
+            res.send(favoriteIds);
+        }
+        else{
+            res.send([]);
+        }
+    });
+}
+
+function indexOf(array, item){
+    for (var j = 0; j < array.length; j++){
+        if (array[j].name == item.name){
+            return j;
+        }
+    }
+    return -1;
 }
 
 // Updates the comments count of a content item

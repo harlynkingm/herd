@@ -59,15 +59,26 @@ $(document).ready(function() {
             $(".loading").hide();
             console.log("LOADED ALL");
         }
-        for (var i = startLoaded; i < loaded; i++){
-            var templ = cardPartial({card: allData[i], user: globalUser});
-            var card_type = "#" + $(templ).attr('id');
-            if (filter.indexOf(card_type) != -1){
-                $(".content-container").append(templ);
-            }
-        }
-        $(".content-container").css("height", "");
-        canLoad = true;
+        $.ajax({
+            url: '/users/favoriteIds',
+            type: 'GET',
+            success: function(ids){
+                for (var i = startLoaded; i < loaded; i++){
+                    var templ = cardPartial({card: allData[i], user: globalUser});
+                    var obj_id = allData[i].name;
+                    var card_type = "#" + $(templ).attr('id');
+                    if (filter.indexOf(card_type) != -1){
+                        $(".content-container").append(templ);
+                        for (var x = 0; x < ids.length; x++){
+                            if (obj_id == ids[x]){
+                                $(".content-container").children().last().children().last().children().children().first().next().children().last().css("color", "rgb(255, 255, 255)");
+                            }
+                        }
+                    }
+                }
+                $(".content-container").css("height", "");
+                canLoad = true;
+        }});
     }
     
     // If a user is more than 60% down the length of the page, load more content
@@ -151,19 +162,19 @@ $(document).ready(function() {
     
     $(".content-container").on(clickHandler, ".card-favorite", function(event){
         event.stopPropagation(); 
-        var contentId = $(this).parent().parent().parent().parent().data("id");
+        var title = $(this).parent().parent().parent().parent().children().first().children().children().html();
         var obj = $(this);
-        if (obj.css("color") == "rgb(255, 255, 255)"){
-            obj.css("color", "rgba(255, 255, 255, 0)");
-        }
-        else{
-            obj.css("color", "rgba(255, 255, 255, 1)");
-        }
         $.ajax({
             url: '/users/addFavorite',
             type: 'POST',
-            data: {contentId: contentId},
+            data: {name: title},
             success: function(data){
+                if (obj.css("color") == "rgb(255, 255, 255)"){
+                    obj.css("color", "rgba(255, 255, 255, 0)");
+                }
+                else{
+                    obj.css("color", "rgba(255, 255, 255, 1)");
+                }
             }
         });
     });
